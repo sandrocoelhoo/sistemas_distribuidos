@@ -1,56 +1,40 @@
+package Handlers;
 
-import Grafo.Aresta;
-import Grafo.KeyNotFound;
 import Grafo.MetodosGrafo;
-import Grafo.Vertice;
-import java.util.List;
+import java.util.logging.Handler;
+
+import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.TException;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
 
+public class ServerHandler {
 
-public class ServerHandler implements MetodosGrafo.Iface {
+    public static GrafoHandler handler;
+    public static Grafo.MetodosGrafo.Processor processor;
 
-    public boolean addVertice(int nome, int cor, String descricao, double peso) throws TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    static String args1[] = {"4242"};
+
+    public static void main(String[] args) {
+        try {
+
+            handler = new GrafoHandler();
+            processor = new Grafo.MetodosGrafo.Processor(handler);
+
+            TServerTransport servertransport = new TServerSocket(Integer.parseInt(args1[0]));
+
+            TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(servertransport).processor(processor));
+
+            System.out.println("Starting the server...");
+            server.serve();
+
+        } catch (TException x) {
+            x.printStackTrace();
+        }
     }
-
-    public Vertice readVertice(int nome) throws TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public boolean updateVertice(Vertice v, int cor) throws KeyNotFound, TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public boolean deleteVertice(Vertice v) throws KeyNotFound, TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public List<Vertice> readAllVertice() throws TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public List<Vertice> readVerticeNeighboors(Vertice v) throws TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public boolean addAresta(Vertice v1, Vertice v2, double peso, boolean direct, String descricao) throws TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public List<Aresta> readAllAresta() throws TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public List<Aresta> readAllArestaOfVertice(Vertice v) throws TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public boolean updateAresta(Aresta a, double peso) throws KeyNotFound, TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public boolean deleteAresta(Aresta a) throws KeyNotFound, TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }
