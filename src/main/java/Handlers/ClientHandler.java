@@ -1,8 +1,12 @@
 package Handlers;
 
+import Grafo.Aresta;
+import Grafo.KeyNotFound;
 import Grafo.MetodosGrafo;
 import Grafo.Vertice;
+import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -71,10 +75,13 @@ public class ClientHandler {
                             System.out.print("Peso do vertice-> ");
                             peso = sc.nextDouble();
 
+                            ConcurrentHashMap<Integer, Aresta> HashAresta = new ConcurrentHashMap<>();
+
                             v.setNome(nome);
                             v.setCor(cor);
                             v.setDescricao(descricao);
                             v.setPeso(peso);
+                            v.setHashAresta(HashAresta);
 
                             if (client.addVertice(v)) {
                                 System.out.println("# Vertice adicionado!");
@@ -93,19 +100,17 @@ public class ClientHandler {
                             System.out.print("Nome do vertice-> ");
                             nome = sc.nextInt();
 
-                            v = client.readVertice(nome);
+                            try {
+                                v = client.readVertice(nome);
 
-                            // Condição usada para não exibir os dados nulos.
-                            if (v.equals(null)) {
-                                System.out.println("Objeto não encontrado. ");
-                                break;
+                                System.out.println("\n ----------- DADO ENCONTRADO -----------");
+                                System.out.println("Nome: " + v.getNome());
+                                System.out.println("Cor: " + v.getCor());
+                                System.out.println("Descricao: " + v.getDescricao());
+                                System.out.println("Peso: " + v.getPeso());
+                            } catch (KeyNotFound e) {
+                                System.out.println("Vertice nao encontrado.");
                             }
-
-                            System.out.println("\n ----------- DADO ENCONTRADO -----------");
-                            System.out.println("Nome: " + v.getNome());
-                            System.out.println("Cor: " + v.getCor());
-                            System.out.println("Descricao: " + v.getDescricao());
-                            System.out.println("Peso: " + v.getPeso());
                             break;
                         case 6:
                             break;
