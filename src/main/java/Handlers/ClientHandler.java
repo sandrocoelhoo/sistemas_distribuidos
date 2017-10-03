@@ -92,8 +92,16 @@ public class ClientHandler {
                             System.out.println("\n@@@@@ LER UNICO VERTICE @@@@@ \n");
                             System.out.print("Nome do vertice-> ");
                             nome = sc.nextInt();
-                            
+
                             v = client.readVertice(nome);
+
+                            // Condição usada para não exibir os dados nulos.
+                            if (v.equals(null)) {
+                                System.out.println("Objeto não encontrado. ");
+                                break;
+                            }
+
+                            System.out.println("\n ----------- DADO ENCONTRADO -----------");
                             System.out.println("Nome: " + v.getNome());
                             System.out.println("Cor: " + v.getCor());
                             System.out.println("Descricao: " + v.getDescricao());
