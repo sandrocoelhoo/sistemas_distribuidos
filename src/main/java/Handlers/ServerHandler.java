@@ -1,6 +1,5 @@
 package Handlers;
 
-
 import org.apache.thrift.TException;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -16,8 +15,6 @@ public class ServerHandler {
 
     public static void main(String[] args) {
         try {
-
-            System.out.println("Starting the server...");
             handler = new GrafoHandler();
             processor = new Grafo.MetodosGrafo.Processor(handler);
 
