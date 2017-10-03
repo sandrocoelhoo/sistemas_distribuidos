@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Handlers;
 
 import Grafo.Aresta;
@@ -14,10 +10,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.thrift.TException;
 
-/**
- *
- * @author matheus
- */
 public class GrafoHandler implements MetodosGrafo.Iface{
     private ConcurrentHashMap<Integer,Vertice> HashVertice;
 
