@@ -26,7 +26,7 @@ public class ServerHandler {
             handler = new GrafoHandler();
             processor = new Grafo.MetodosGrafo.Processor(handler);
 
-            TServerTransport servertransport = new TServerSocket(Integer.parseInt(args1[0]));
+            TServerTransport servertransport = new TServerSocket(4242);
 
             TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(servertransport).processor(processor));
 
