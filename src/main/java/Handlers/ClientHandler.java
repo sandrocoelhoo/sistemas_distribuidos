@@ -1,13 +1,7 @@
 package Handlers;
 
-import Grafo.Aresta;
 import Grafo.MetodosGrafo;
-import Grafo.Vertice;
-import static Handlers.ClientHandler.args1;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -16,38 +10,58 @@ import org.apache.thrift.transport.TTransport;
 
 public class ClientHandler {
 
-    static String args1[] = {"4242"};
+    private static String args1[] = {"localhost","4242"};
+
+    static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        connection(args);   
+    }
+
+    public static void menuPrincipal() {
+        int aux;
+        do {
+            
+        System.out.println("\n =====> MENU PRINCIPAL: GRAFO <===== \n");
+        System.out.println("1  - Adicionar vertice");
+        System.out.println("3  - Atualizar vertice");
+        System.out.println("4  - Deletar vertice");
+        System.out.println("5  - Ler unico vertice");
+        System.out.println("6  - Ler todos os vertices do grafo");
+        System.out.println("7  - Ler os vizinhos de um vertice");
+        System.out.println("\t <-------> ");
+        System.out.println("8  - Adicionar aresta");
+        System.out.println("9  - Atualizar aresta ");
+        System.out.println("10 - Deletar aresta ");
+        System.out.println("11 - Ler todas as arestas do grafo");
+        System.out.println("12 - Ler todas as arestas de o vertice");
+        System.out.println("13 - Finalizar conexão");
+        aux = sc.nextInt();
+        
+        }while(aux > 13 || aux <= 0);
+    }
+
+    public static void connection(String[] args) {
         try {
-            Scanner sc = new Scanner(System.in);
+            
+            System.out.println("\n ===== CONEXÃO CLIENTE/SERVIDOR ===== \n");
+            System.out.print("Conectando no servidor: " + args[0]);
+            System.out.print("\nPorta: " + args[1]);
 
-            //if (args.length > 0) {
-            TTransport transport = new TSocket("localhost", 4242);
+            if (args.length > 0) {
+            
+            // Recebe o endereço do servidor e porta para tentar conexão
+            TTransport transport = new TSocket(args[0], Integer.parseInt(args[1]));
             transport.open();
-            System.out.println("2");
-
+            // Chama o protocolo de comunicação entre S/C
             TProtocol protocol = new TBinaryProtocol(transport);
             MetodosGrafo.Client client = new MetodosGrafo.Client(protocol);
-
             
-            ConcurrentHashMap<Integer, Aresta> HashVertice = new ConcurrentHashMap();
+            menuPrincipal();
             
-            Vertice v = new Vertice(1, 1, "t", 1, HashVertice);
-
-            if(client.addVertice(v)){
-                System.out.println("Deu bão");
-                
-            };
-            
-            List<Vertice> Vertices = new ArrayList<>();
-            Vertices = client.readAllVertice();
-            
-            System.out.println("matheus viado: " + Vertices.get(0).nome);
-
+            // Finaliza a conexão com o servidor
             transport.close();
-
-            //}
+            }
         } catch (TException x) {
             x.printStackTrace();
         }
