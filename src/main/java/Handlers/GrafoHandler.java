@@ -27,7 +27,7 @@ public class GrafoHandler implements MetodosGrafo.Iface {
     }
 
     @Override
-    public Vertice readVertice(int nome) throws TException {
+    public Vertice readVertice(int nome) throws TException, KeyNotFound {
         Vertice v = HashVertice.get(nome);
         //comput if abscent ou object o e dar synchronized
         if (v != null) {
