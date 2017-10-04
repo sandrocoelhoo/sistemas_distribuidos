@@ -129,12 +129,12 @@ public class ClientHandler {
                         case 13:
                             // Finaliza a conexão com o servidor
                             System.exit(0);
+                            transport.close();
                             System.out.println("\n==> Conexão finalizada!");
                         default:
                             System.out.println("\n==> ERROR! Opção inválida. Selecione uma opção válida do menu.");
                     }
 
-                    transport.close();
                 } while (1 != 0);
             }
         } catch (TException x) {
