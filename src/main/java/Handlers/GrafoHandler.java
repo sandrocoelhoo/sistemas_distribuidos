@@ -46,7 +46,10 @@ public class GrafoHandler implements MetodosGrafo.Iface {
             Vertice vertice = readVertice(v.getNome());
 
             synchronized(vertice){
-                vertice.setCor(cor);
+                vertice.setCor(v.getCor());
+                vertice.setNome(v.getNome());
+                vertice.setDescricao(v.getDescricao());
+                vertice.setPeso(v.getPeso());
                 return true;
             }
             

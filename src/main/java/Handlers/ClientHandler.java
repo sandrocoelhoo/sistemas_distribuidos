@@ -4,7 +4,9 @@ import Grafo.Aresta;
 import Grafo.KeyNotFound;
 import Grafo.MetodosGrafo;
 import Grafo.Vertice;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.thrift.TException;
@@ -164,10 +166,57 @@ public class ClientHandler {
                             }
                             break;
                         case 5:
+                            System.out.println("\n@@@@@ LER TODOS OS VERTICES DO GRAFO @@@@@ \n");
+
+                            try {
+                                List<Vertice> vertices = new ArrayList<>();
+                                vertices = client.readAllVertice();
+
+                                for (Vertice vertice : vertices) {
+                                    System.out.println("\nNome: " + vertice.getNome());
+                                    System.out.println("Cor: " + vertice.getCor());
+                                    System.out.println("Descricao: " + vertice.getDescricao());
+                                    System.out.println("Peso: " + vertice.getPeso());
+                                }
+                            } catch (KeyNotFound e) {
+                                System.out.println("Vertices nao encontrados.");
+                            }
                             break;
                         case 6:
+                            System.out.println("\n@@@@@ LER TODOS OS VIZINHOS DE UM VERTICE @@@@@ \n");
+                            System.out.print("Nome do vertice-> ");
+                            nome = sc.nextInt();
+                            sc.nextLine();
+
+                            v.setNome(nome);
+
+                            try {
+                                List<Vertice> vertices = new ArrayList<>();
+                                vertices = client.readVerticeNeighboors(v);
+
+                                for (Vertice vertice : vertices) {
+                                    System.out.println("\nNome: " + vertice.getNome());
+                                    System.out.println("Cor: " + vertice.getCor());
+                                    System.out.println("Descricao: " + vertice.getDescricao());
+                                    System.out.println("Peso: " + vertice.getPeso());
+                                }
+                            } catch (KeyNotFound e) {
+                                System.out.println("Vertices nao encontrados.");
+                            }
                             break;
                         case 7:
+                            System.out.println("\n@@@@@ ADICIONAR VERTICE @@@@@ \n");
+                            System.out.print("Nome do vertice-> ");
+                            nome = sc.nextInt();
+                            sc.nextLine();
+                            System.out.print("Cor do vertice-> ");
+                            cor = sc.nextInt();
+                            sc.nextLine();
+                            System.out.print("Descricao do vertice-> ");
+                            descricao = sc.nextLine();
+                            System.out.print("Peso do vertice-> ");
+                            peso = sc.nextDouble();
+                            sc.nextLine();
                             break;
                         case 8:
                             break;
