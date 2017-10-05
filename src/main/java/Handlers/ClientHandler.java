@@ -55,7 +55,7 @@ public class ClientHandler {
                     System.out.println("6  - Ler os vizinhos de um vertice");
                     System.out.println("7  - Adicionar aresta");
                     System.out.println("8  - Atualizar aresta ");
-                    System.out.println("9 - Deletar aresta ");
+                    System.out.println("9  - Deletar aresta ");
                     System.out.println("10 - Ler todas as arestas do grafo");
                     System.out.println("11 - Ler todas as arestas de o vertice");
                     System.out.println("12 - Finalizar conexão");
@@ -147,8 +147,6 @@ public class ClientHandler {
 
                             break;
                         case 4:
-                            break;
-                        case 5:
                             System.out.println("\n@@@@@ LER UNICO VERTICE @@@@@ \n");
                             System.out.print("Nome do vertice-> ");
                             nome = sc.nextInt();
@@ -164,6 +162,8 @@ public class ClientHandler {
                             } catch (KeyNotFound e) {
                                 System.out.println("Vertice nao encontrado.");
                             }
+                            break;
+                        case 5:
                             break;
                         case 6:
                             break;
