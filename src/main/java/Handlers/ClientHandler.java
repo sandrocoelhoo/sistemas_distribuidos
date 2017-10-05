@@ -184,6 +184,7 @@ public class ClientHandler {
                                 System.out.println("Cor: " + v.getCor());
                                 System.out.println("Descricao: " + v.getDescricao());
                                 System.out.println("Peso: " + v.getPeso());
+                            
                             } catch (KeyNotFound e) {
                                 System.out.println("Vertice nao encontrado.");
                             }

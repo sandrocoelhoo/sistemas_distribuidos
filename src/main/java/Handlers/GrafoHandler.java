@@ -28,19 +28,15 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public Vertice readVertice(int nome) throws TException, KeyNotFound {
-        Vertice v;
         
-        /*v = HashVertice.computeIfPresent(nome, (a, b) -> {
-            return b;
-        });*/
+        Vertice v = HashVertice.computeIfPresent(nome, (a, b) -> {return b;});
         
-        v = HashVertice.get(nome);
-
         if (v != null) {
             return v;
-        } else {
-            throw new KeyNotFound();
         }
+        
+        throw new KeyNotFound();
+        
     }
 
     @Override
