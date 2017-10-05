@@ -28,8 +28,11 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public Vertice readVertice(int nome) throws TException, KeyNotFound {
-        Vertice v = HashVertice.get(nome);
-        //comput if abscent ou object o e dar synchronized
+        Vertice v;
+        v = HashVertice.computeIfPresent(nome, (a,b) -> { 
+            return b;
+        });
+
         if (v != null) {
             return v;
         }
@@ -39,12 +42,14 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public boolean updateVertice(Vertice v, int cor) throws KeyNotFound, TException {
-        try {
-            // mandar o vértice com os dados novos mas alterar o vértice todo
-            Vertice v1 = readVertice(v.getNome());
+      try {
+            Vertice vertice = readVertice(v.getNome());
 
-            v1.setCor(cor);
-            return true;
+            synchronized(vertice){
+                vertice.setCor(cor);
+                return true;
+            }
+            
         } catch (KeyNotFound e) {
             return false;
         }
@@ -52,14 +57,24 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public boolean deleteVertice(Vertice v) throws KeyNotFound, TException {
-        Vertice vertice;
-        for (Integer key : v.HashAresta.keySet()) {
-            vertice = HashVertice.get(v.HashAresta.get(key).nomeVertice1);
-            vertice.HashAresta.remove(key);
-        }
-        HashVertice.remove(v.nome);
-
-        return true;
+        synchronized(v){
+            try{
+                Vertice vertice = readVertice(v.getNome());
+                
+            for (Integer key : v.HashAresta.keySet()) {
+                vertice = this.readVertice(v.nome);
+                vertice.HashAresta.remove(key);
+            
+        
+            HashVertice.remove(v.nome);
+            return true;
+            
+            }
+            }catch(KeyNotFound e){
+                System.out.println("Vertice nao encontrado.");
+            }
+                return false;
+        }   
     }
 
     @Override
@@ -67,7 +82,7 @@ public class GrafoHandler implements MetodosGrafo.Iface {
         ArrayList<Vertice> Vertices = new ArrayList<>();
 
         for (Integer key : HashVertice.keySet()) {
-            Vertices.add(HashVertice.get(key));
+            Vertices.add(this.readVertice(key));
         }
 
         return Vertices;
@@ -78,8 +93,8 @@ public class GrafoHandler implements MetodosGrafo.Iface {
         ArrayList<Vertice> Vertices = new ArrayList<>();
 
         //hashvertice.values(); retorna uma lista. Cast de arraylist.
-        for (Integer key : HashVertice.keySet()) {
-            Vertices.add(HashVertice.get(key));
+        for (Integer key : v.HashAresta.keySet()) {
+            Vertices.add(this.readVertice(v.HashAresta.get(key).nomeVertice1));
         }
 
         return Vertices;
@@ -87,7 +102,7 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public boolean addAresta(Aresta a, Vertice v) throws TException {
-        if (HashVertice.get(v.nome).HashAresta.put(v.nome, a) == null) {
+        if (HashVertice.get(v.nome).HashAresta.putIfAbsent(a.nomeVertice1, a) == null) {
             return true;
         }
         
@@ -95,7 +110,7 @@ public class GrafoHandler implements MetodosGrafo.Iface {
     }
 
     @Override
-    public List<Aresta> readAllAresta() throws TException {
+    public List<Aresta> readAllAresta() throws TException { // Tratar concorrência
         ArrayList<Aresta> Arestas = new ArrayList<>();
 
         for (Integer keyVertice : HashVertice.keySet()) {
@@ -107,7 +122,7 @@ public class GrafoHandler implements MetodosGrafo.Iface {
     }
 
     @Override
-    public List<Aresta> readAllArestaOfVertice(Vertice v) throws TException {
+    public List<Aresta> readAllArestaOfVertice(Vertice v) throws TException { // Tratar concorrência
         ArrayList<Aresta> Arestas = new ArrayList<>();
 
         for (Integer key : v.HashAresta.keySet()) {

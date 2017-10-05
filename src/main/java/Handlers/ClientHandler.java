@@ -48,17 +48,17 @@ public class ClientHandler {
 
                     System.out.println("\n =====> MENU PRINCIPAL: GRAFO <===== \n");
                     System.out.println("1  - Adicionar vertice");
-                    System.out.println("3  - Atualizar vertice");
-                    System.out.println("4  - Deletar vertice");
-                    System.out.println("5  - Ler unico vertice");
-                    System.out.println("6  - Ler todos os vertices do grafo");
-                    System.out.println("7  - Ler os vizinhos de um vertice");
-                    System.out.println("8  - Adicionar aresta");
-                    System.out.println("9  - Atualizar aresta ");
-                    System.out.println("10 - Deletar aresta ");
-                    System.out.println("11 - Ler todas as arestas do grafo");
-                    System.out.println("12 - Ler todas as arestas de o vertice");
-                    System.out.println("13 - Finalizar conexão");
+                    System.out.println("2  - Atualizar vertice");
+                    System.out.println("3  - Deletar vertice");
+                    System.out.println("4  - Ler unico vertice");
+                    System.out.println("5  - Ler todos os vertices do grafo");
+                    System.out.println("6  - Ler os vizinhos de um vertice");
+                    System.out.println("7  - Adicionar aresta");
+                    System.out.println("8  - Atualizar aresta ");
+                    System.out.println("9 - Deletar aresta ");
+                    System.out.println("10 - Ler todas as arestas do grafo");
+                    System.out.println("11 - Ler todas as arestas de o vertice");
+                    System.out.println("12 - Finalizar conexão");
                     System.out.print("Opcao-> ");
                     opcao = sc.nextInt();
 
@@ -67,6 +67,7 @@ public class ClientHandler {
                             System.out.println("\n@@@@@ ADICIONAR VERTICE @@@@@ \n");
                             System.out.print("Nome do vertice-> ");
                             nome = sc.nextInt();
+                            sc.nextLine();
                             System.out.print("Cor do vertice-> ");
                             cor = sc.nextInt();
                             sc.nextLine();
@@ -74,6 +75,7 @@ public class ClientHandler {
                             descricao = sc.nextLine();
                             System.out.print("Peso do vertice-> ");
                             peso = sc.nextDouble();
+                            sc.nextLine();
 
                             ConcurrentHashMap<Integer, Aresta> HashAresta = new ConcurrentHashMap<>();
 
@@ -90,8 +92,59 @@ public class ClientHandler {
                             }
                             break;
                         case 2:
+                            System.out.println("\n@@@@@ ATUALIZAR VERTICE @@@@@ \n");
+                            System.out.print("Nome do vertice-> ");
+                            nome = sc.nextInt();
+                            sc.nextLine();
+                            System.out.print("Cor do vertice-> ");
+                            cor = sc.nextInt();
+                            sc.nextLine();
+                            System.out.print("Descricao do vertice-> ");
+                            descricao = sc.nextLine();
+                            System.out.print("Peso do vertice-> ");
+                            peso = sc.nextDouble();
+                            sc.nextLine();
+
+                            v.setNome(nome);
+                            v.setCor(cor);
+                            v.setDescricao(descricao);
+                            v.setPeso(peso);
+
+                            if (client.updateVertice(v, cor)) {
+                                System.out.println("# Vertice atualizado!");
+                            } else {
+                                System.out.println("# Problema na atualizacao do vertice. Repita a operacao.");
+                            }
                             break;
                         case 3:
+                            System.out.println("\n@@@@@ DELETAR VERTICE @@@@@ \n");
+                            System.out.print("Nome do vertice-> ");
+                            nome = sc.nextInt();
+                            sc.nextLine();
+                            System.out.print("Cor do vertice-> ");
+                            cor = sc.nextInt();
+                            sc.nextLine();
+                            System.out.print("Descricao do vertice-> ");
+                            descricao = sc.nextLine();
+                            System.out.print("Peso do vertice-> ");
+                            peso = sc.nextDouble();
+                            sc.nextLine();
+
+                            v.setNome(nome);
+                            v.setCor(cor);
+                            v.setDescricao(descricao);
+                            v.setPeso(peso);
+
+                            try {
+                                if (client.deleteVertice(v)) {
+                                    System.out.println("# Vertice deletado!");
+                                } else {
+                                    System.out.println("# Problema na remocao do vertice. Repita a operacao.");
+                                }
+                            } catch (KeyNotFound e) {
+                                System.out.println("Vertice nao encontrado.");
+                            }
+
                             break;
                         case 4:
                             break;
@@ -125,12 +178,10 @@ public class ClientHandler {
                         case 11:
                             break;
                         case 12:
-                            break;
-                        case 13:
                             // Finaliza a conexão com o servidor
-                            System.exit(0);
-                            transport.close();
                             System.out.println("\n==> Conexão finalizada!");
+                            transport.close();
+                            System.exit(0);
                         default:
                             System.out.println("\n==> ERROR! Opção inválida. Selecione uma opção válida do menu.");
                     }
