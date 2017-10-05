@@ -29,7 +29,7 @@ public class GrafoHandler implements MetodosGrafo.Iface {
     @Override
     public Vertice readVertice(int nome) throws TException, KeyNotFound {
         Vertice v;
-        v = HashVertice.computeIfPresent(nome, (a,b) -> { 
+        v = HashVertice.computeIfPresent(nome, (a, b) -> {
             return b;
         });
 
@@ -45,13 +45,13 @@ public class GrafoHandler implements MetodosGrafo.Iface {
         try {
             Vertice vertice = readVertice(v.getNome());
 
-            synchronized(vertice){
+            synchronized (vertice) {
                 vertice.setCor(v.getCor());
                 vertice.setDescricao(v.getDescricao());
                 vertice.setPeso(v.getPeso());
                 return true;
             }
-            
+
         } catch (KeyNotFound e) {
             return false;
         }
@@ -59,24 +59,18 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public boolean deleteVertice(Vertice v) throws KeyNotFound, TException {
-        synchronized(v){
-            try{
-                Vertice vertice = readVertice(v.getNome());
-                
-            for (Integer key : v.HashAresta.keySet()) {
-                vertice = this.readVertice(v.nome);
-                vertice.HashAresta.remove(key);
-            
         
-            HashVertice.remove(v.nome);
-            return true;
-            
+        synchronized (v) {
+
+            for (Integer key : v.HashAresta.keySet()) {
+                v.HashAresta.remove(key);
+
+                HashVertice.remove(v.nome);
+                return true;
             }
-            }catch(KeyNotFound e){
-                System.out.println("Vertice nao encontrado.");
-            }
-                return false;
-        }   
+            return false;
+
+        }
     }
 
     @Override
@@ -107,17 +101,17 @@ public class GrafoHandler implements MetodosGrafo.Iface {
         if (HashVertice.get(a.v1).HashAresta.putIfAbsent(a.v2, a) == null) {
             return true;
         }
-        
+
         return false;
     }
-    
+
     @Override
     public Aresta readAresta(int nomeV1, int nomeV2) throws TException {
         Vertice vertice;
         vertice = this.readVertice(nomeV1);
-        
+
         Aresta aresta;
-        aresta = vertice.HashAresta.computeIfPresent(nomeV2, (a,b) -> { 
+        aresta = vertice.HashAresta.computeIfPresent(nomeV2, (a, b) -> {
             return b;
         });
 
@@ -126,7 +120,7 @@ public class GrafoHandler implements MetodosGrafo.Iface {
         }
 
         throw new KeyNotFound();
-        
+
     }
 
     @Override
@@ -159,13 +153,13 @@ public class GrafoHandler implements MetodosGrafo.Iface {
         try {
             Aresta aresta = this.readAresta(a.v1, a.v2);
 
-            synchronized(aresta){
+            synchronized (aresta) {
                 aresta.setDescricao(a.descricao);
                 aresta.setDirect(a.isDirect());
                 aresta.setPeso(a.getPeso());
                 return true;
             }
-            
+
         } catch (KeyNotFound e) {
             return false;
         }
@@ -173,7 +167,7 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public boolean deleteAresta(Aresta a) throws KeyNotFound, TException {
-        synchronized(a){
+        synchronized (a) {
             Vertice v1 = this.readVertice(a.getV1());
             Vertice v2 = this.readVertice(a.getV2());
 
