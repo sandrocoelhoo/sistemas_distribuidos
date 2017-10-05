@@ -112,10 +112,15 @@ public class ClientHandler {
                             v.setDescricao(descricao);
                             v.setPeso(peso);
 
-                            if (client.updateVertice(v, cor)) {
-                                System.out.println("# Vertice atualizado!");
-                            } else {
-                                System.out.println("# Problema na atualizacao do vertice. Repita a operacao.");
+                            try {
+                                if (client.updateVertice(v)) {
+                                    System.out.println("# Vertice atualizado!");
+                                } else {
+                                    System.out.println("# Problema na atualizacao do vertice. Repita a operacao.");
+                                }
+
+                            } catch (KeyNotFound e) {
+                                System.out.println("Problema ");
                             }
                             break;
                         case 3:
@@ -238,7 +243,7 @@ public class ClientHandler {
                 } while (1 != 0);
             }
         } catch (TException x) {
-            x.printStackTrace();
+            System.out.println(x.getMessage());
         }
     }
 }

@@ -41,13 +41,12 @@ public class GrafoHandler implements MetodosGrafo.Iface {
     }
 
     @Override
-    public boolean updateVertice(Vertice v, int cor) throws KeyNotFound, TException {
-      try {
+    public boolean updateVertice(Vertice v) throws KeyNotFound, TException {
+        try {
             Vertice vertice = readVertice(v.getNome());
 
             synchronized(vertice){
                 vertice.setCor(v.getCor());
-                vertice.setNome(v.getNome());
                 vertice.setDescricao(v.getDescricao());
                 vertice.setPeso(v.getPeso());
                 return true;
@@ -97,19 +96,37 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
         //hashvertice.values(); retorna uma lista. Cast de arraylist.
         for (Integer key : v.HashAresta.keySet()) {
-            Vertices.add(this.readVertice(v.HashAresta.get(key).nomeVertice1));
+            Vertices.add(this.readVertice(v.HashAresta.get(key).v2));
         }
 
         return Vertices;
     }
 
     @Override
-    public boolean addAresta(Aresta a, Vertice v) throws TException {
-        if (HashVertice.get(v.nome).HashAresta.putIfAbsent(a.nomeVertice1, a) == null) {
+    public boolean addAresta(Aresta a) throws TException {
+        if (HashVertice.get(a.v1).HashAresta.putIfAbsent(a.v2, a) == null) {
             return true;
         }
         
         return false;
+    }
+    
+    @Override
+    public Aresta readAresta(int nomeV1, int nomeV2) throws TException {
+        Vertice vertice;
+        vertice = this.readVertice(nomeV1);
+        
+        Aresta aresta;
+        aresta = vertice.HashAresta.computeIfPresent(nomeV2, (a,b) -> { 
+            return b;
+        });
+
+        if (aresta != null) {
+            return aresta;
+        }
+
+        throw new KeyNotFound();
+        
     }
 
     @Override
@@ -127,27 +144,43 @@ public class GrafoHandler implements MetodosGrafo.Iface {
     @Override
     public List<Aresta> readAllArestaOfVertice(Vertice v) throws TException { // Tratar concorrência
         ArrayList<Aresta> Arestas = new ArrayList<>();
+        Vertice vertice;
 
         for (Integer key : v.HashAresta.keySet()) {
-            Arestas.add(v.HashAresta.get(key));
+            vertice = this.readVertice(v.HashAresta.get(key).v2);
+            Arestas.add(this.readAresta(v.nome, vertice.nome));
         }
 
         return Arestas;
     }
 
     @Override
-    public boolean updateAresta(Aresta a, double peso) throws KeyNotFound, TException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean updateAresta(Aresta a) throws KeyNotFound, TException {
+        try {
+            Aresta aresta = this.readAresta(a.v1, a.v2);
+
+            synchronized(aresta){
+                aresta.setDescricao(a.descricao);
+                aresta.setDirect(a.isDirect());
+                aresta.setPeso(a.getPeso());
+                return true;
+            }
+            
+        } catch (KeyNotFound e) {
+            return false;
+        }
     }
 
     @Override
     public boolean deleteAresta(Aresta a) throws KeyNotFound, TException {
-        Vertice v1 = HashVertice.get(a.nomeVertice1);
-        Vertice v2 = HashVertice.get(v1.HashAresta.get(a.nomeVertice1));
+        synchronized(a){
+            Vertice v1 = this.readVertice(a.getV1());
+            Vertice v2 = this.readVertice(a.getV2());
 
-        v1.HashAresta.remove(a);
-        v2.HashAresta.remove(a);
+            v1.HashAresta.remove(v2.getNome());
+            v2.HashAresta.remove(v1.getNome());
 
-        return true;
+            return true;
+        }
     }
 }
