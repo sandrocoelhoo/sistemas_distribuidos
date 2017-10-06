@@ -29,11 +29,6 @@ public class GrafoHandler implements MetodosGrafo.Iface {
     @Override
     public Vertice readVertice(int nome) throws TException, KeyNotFound {
 
-        if (!HashVertice.containsKey(nome)) {
-            System.out.println("Tentativa de ");
-            throw new KeyNotFound();
-        }
-
         Vertice v = HashVertice.computeIfPresent(nome, (a, b) -> {
             return b;
         });
@@ -65,17 +60,18 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public boolean deleteVertice(Vertice v) throws KeyNotFound, TException {
+        Vertice v1 = this.readVertice(v.nome);
+        Vertice v2;
 
-        synchronized (v) {
-
-            for (Integer key : v.HashAresta.keySet()) {
-                v.HashAresta.remove(key);
-
-                HashVertice.remove(v.nome);
+        synchronized (v1) {
+            for (Integer key : v1.HashAresta.keySet()) {
+                v2 = this.readVertice(v1.HashAresta.get(key).v2);
+                v2.HashAresta.remove(key);
+            }
+            if (HashVertice.remove(v.nome) != null) {
                 return true;
             }
             return false;
-
         }
     }
 

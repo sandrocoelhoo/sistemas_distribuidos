@@ -62,7 +62,7 @@ public class ClientHandler {
                     System.out.println("9  - Deletar aresta ");
                     System.out.println("10 - Ler unica aresta ");
                     System.out.println("11 - Ler todas as arestas do grafo");
-                    System.out.println("12 - Ler todas as arestas de o vertice");
+                    System.out.println("12 - Ler todas as arestas de um vertice");
                     System.out.println("13 - Finalizar conexão");
                     System.out.print("Opcao-> ");
                     opcao = sc.nextInt();
@@ -184,7 +184,7 @@ public class ClientHandler {
                                 System.out.println("Cor: " + v.getCor());
                                 System.out.println("Descricao: " + v.getDescricao());
                                 System.out.println("Peso: " + v.getPeso());
-                            
+
                             } catch (KeyNotFound e) {
                                 System.out.println("Vertice nao encontrado.");
                             }
@@ -212,20 +212,26 @@ public class ClientHandler {
                             nome = sc.nextInt();
                             sc.nextLine();
 
-                            v.setNome(nome);
-
                             try {
+
+                                v = client.readVertice(nome);
+
                                 List<Vertice> vertices = new ArrayList<>();
                                 vertices = client.readVerticeNeighboors(v);
 
+                                if (vertices == null) {
+                                    System.out.println("Nenhum vizinho para este vertice.");
+                                }
+
                                 for (Vertice vertice : vertices) {
+                                    System.out.print("\n--- Vertice Vizinho de V" + nome + " ---");
                                     System.out.println("\nNome: " + vertice.getNome());
                                     System.out.println("Cor: " + vertice.getCor());
                                     System.out.println("Descricao: " + vertice.getDescricao());
                                     System.out.println("Peso: " + vertice.getPeso());
                                 }
                             } catch (KeyNotFound e) {
-                                System.out.println("Vertices nao encontrados.");
+                                System.out.println("Vertice de referencia nao encontrado.");
                             }
                             break;
                         case 7:
@@ -252,58 +258,160 @@ public class ClientHandler {
                             a.setDirect(direct);
 
                             if (client.addAresta(a)) {
-                                System.out.println("# Aresta entreos vertices " + v1 + " e " + v2 + " adicionada!");
+                                System.out.println("# Aresta entre os vertices V" + v1 + " e V" + v2 + " adicionada!");
+
+                                if (direct == false) {
+                                    a.setV1(v2);
+                                    a.setV2(v1);
+
+                                    if (client.addAresta(a)) {
+                                        System.out.println("# Aresta espelhada entre os vertices V" + v2 + " e V" + v1 + " adicionada!");
+                                    } else {
+                                        System.out.println("# Nao foi possivel inserir outra aresta espelhada");
+                                    }
+                                }
                             } else {
                                 System.out.println("# Problema na insercao da aresta. Repita a operacao.");
                             }
                             break;
                         case 8:
-                            System.out.println("\n@@@@@ ATUALIZAR ARESTA @@@@@ \n");
-                            System.out.print("Nome do 1º vertice-> ");
-                            v1 = sc.nextInt();
-                            sc.nextLine();
-                            System.out.print("Nome do 2º vertice-> ");
-                            v2 = sc.nextInt();
-                            sc.nextLine();
-                            System.out.println("-------------------");
-                            System.out.print("Peso da aresta-> ");
-                            peso = sc.nextDouble();
-                            sc.nextLine();
-                            System.out.print("Descricao da aresta-> ");
-                            descricao = sc.nextLine();
-                            System.out.print("Vertice direcionada? -> ");
-                            direct = sc.nextBoolean();
-                            sc.nextLine();
-
-                            a.setV1(v1);
-                            a.setV2(v2);
-                            a.setPeso(peso);
-                            a.setDescricao(descricao);
-                            a.setDirect(direct);
-
                             try {
+                                System.out.println("\n@@@@@ ATUALIZAR ARESTA @@@@@ \n");
+                                System.out.print("Nome do 1º vertice-> ");
+                                v1 = sc.nextInt();
+                                sc.nextLine();
+
+                                v = client.readVertice(v1);
+
+                                System.out.print("Nome do 2º vertice-> ");
+                                v2 = sc.nextInt();
+                                sc.nextLine();
+                                System.out.println("-------------------");
+
+                                v = client.readVertice(v2);
+
+                                a = client.readAresta(v1, v2);
+
+                                System.out.print("Peso da aresta-> ");
+                                peso = sc.nextDouble();
+                                sc.nextLine();
+                                System.out.print("Descricao da aresta-> ");
+                                descricao = sc.nextLine();
+
+                                a.setV1(v1);
+                                a.setV2(v2);
+                                a.setPeso(peso);
+                                a.setDescricao(descricao);
+
                                 if (client.updateAresta(a)) {
                                     System.out.println("# Aresta atualizada!");
+                                    
+                                    if (a.direct == false){
+                                        a.setV1(v2);
+                                        a.setV2(v1);
+                                        
+                                        if (client.updateAresta(a)){
+                                            System.out.println("# Aresta espelhada atualiza! ");
+                                        }
+                                    }
                                 } else {
                                     System.out.println("# Problema na atualizacao da Aresta. Repita a operacao.");
                                 }
 
                             } catch (KeyNotFound e) {
-                                System.out.println("Problema ");
+                                System.out.println("# Dado nao encontrado no grafo.");
                             }
                             break;
                         case 9:
+                            try {
+                                System.out.println("\n@@@@@ DELETAR ARESTA @@@@@ \n");
+                                System.out.print("Nome do 1º vertice-> ");
+                                v1 = sc.nextInt();
+                                sc.nextLine();
+
+                                v = client.readVertice(v1);
+
+                                System.out.print("Nome do 2º vertice-> ");
+                                v2 = sc.nextInt();
+                                sc.nextLine();
+                                System.out.println("-------------------");
+
+                                v = client.readVertice(v2);
+
+                                a = client.readAresta(v1, v2);
+
+                                System.out.println("\n ----------- DADO ENCONTRADO -----------");
+                                System.out.println("Nome do 1º vertice-> " + a.getV1());
+                                System.out.println("Nome do 2º vertice-> " + a.getV2());
+                                System.out.println("Peso da aresta-> " + a.getPeso());
+                                System.out.println("Descricao da aresta-> " + a.getDescricao());
+                                System.out.println("Vertice direcionada? -> " + a.direct);
+
+                                if (a.direct == false) {
+                                    a = client.readAresta(v2, v1);
+
+                                    System.out.println("\n ----------- OUTRO DADO ENCONTRADO -----------");
+                                    System.out.println("Nome do 1º vertice-> " + a.getV1());
+                                    System.out.println("Nome do 2º vertice-> " + a.getV2());
+                                    System.out.println("Peso da aresta-> " + a.getPeso());
+                                    System.out.println("Descricao da aresta-> " + a.getDescricao());
+                                    System.out.println("Vertice direcionada? -> " + a.direct);
+                                }
+
+                                System.out.println("\n-> Tem certeza que deseja deletar este(s) vertice?");
+                                System.out.println("1 - SIM");
+                                System.out.println("2 - NÃO");
+                                System.out.print("Opcao-> ");
+                                int certeza = sc.nextInt();
+                                sc.nextLine();
+
+                                switch (certeza) {
+                                    case 1:
+                                        a.setV1(v1);
+                                        a.setV2(v2);
+
+                                        if (client.deleteAresta(a)) {
+                                            System.out.println("# Aresta deletada!");
+
+                                            if (a.direct == false) {
+                                                a.setV1(v2);
+                                                a.setV2(v1);
+
+                                                if (client.deleteAresta(a)) {
+                                                    System.out.println("# Aresta espelhada deletada! ");
+                                                }
+                                            }
+                                        } else {
+                                            System.out.println("# Problema na remocao da aresta. Repita a operacao.");
+                                        }
+                                        break;
+                                    case 2:
+                                        System.out.println("# Operacao cancelada.");
+                                        break;
+                                    default:
+                                        System.out.println("# Opcao invalida!");
+                                }
+
+                            } catch (KeyNotFound e) {
+                                System.out.println("Vertice nao encontrado.");
+                            }
+
                             break;
                         case 10:
-                            System.out.println("\n@@@@@ LER UNICA ARESTA @@@@@ \n");
-                            System.out.print("Nome do vertice 1-> ");
-                            v1 = sc.nextInt();
-                            sc.nextLine();
-                            System.out.print("Nome do vertice 2-> ");
-                            v2 = sc.nextInt();
-                            sc.nextLine();
-
                             try {
+                                System.out.println("\n@@@@@ LER UNICA ARESTA @@@@@ \n");
+                                System.out.print("Nome do vertice 1-> ");
+                                v1 = sc.nextInt();
+                                sc.nextLine();
+
+                                client.readVertice(v1);
+
+                                System.out.print("Nome do vertice 2-> ");
+                                v2 = sc.nextInt();
+                                sc.nextLine();
+
+                                client.readVertice(v2);
+
                                 a = client.readAresta(v1, v2);
 
                                 System.out.println("\n ----------- DADO ENCONTRADO -----------");
@@ -314,7 +422,7 @@ public class ClientHandler {
                                 System.out.println("Vertice direcionada? -> " + a.direct);
 
                             } catch (KeyNotFound e) {
-                                System.out.println("Vertice nao encontrado.");
+                                System.out.println("Dados nao encontrados no grafo. Repita a operacao.");
                             }
                             break;
                         case 11:
@@ -324,38 +432,46 @@ public class ClientHandler {
                                 List<Aresta> arestas = new ArrayList<>();
                                 arestas = client.readAllAresta();
 
+                                if (arestas == null) {
+                                    System.out.println("Nenhuma aresta no grafo.");
+                                }
+
                                 for (Aresta aresta : arestas) {
-                                System.out.println("\nNome do 1º vertice-> " + aresta.getV1());
-                                System.out.println("Nome do 2º vertice-> " + aresta.getV2());
-                                System.out.println("Peso da aresta-> " + aresta.getPeso());
-                                System.out.println("Descricao da aresta-> " + aresta.getDescricao());
-                                System.out.println("Vertice direcionada? -> " + aresta.direct);
+                                    System.out.println("\nNome do 1º vertice-> " + aresta.getV1());
+                                    System.out.println("Nome do 2º vertice-> " + aresta.getV2());
+                                    System.out.println("Peso da aresta-> " + aresta.getPeso());
+                                    System.out.println("Descricao da aresta-> " + aresta.getDescricao());
+                                    System.out.println("Vertice direcionada? -> " + aresta.direct);
                                 }
                             } catch (KeyNotFound e) {
                                 System.out.println("Vertices nao encontrados.");
                             }
                             break;
                         case 12:
-                            System.out.println("\n@@@@@ LER TODAS AS ARESTAS DE UM VERTICE @@@@@ \n");
-                            System.out.print("Nome do vertice 1-> ");
-                            v1 = sc.nextInt();
-                            sc.nextLine();
-                            
-                            v.setNome(v1);
-                            
                             try {
+                                System.out.println("\n@@@@@ LER TODAS AS ARESTAS DE UM VERTICE @@@@@ \n");
+                                System.out.print("Nome do vertice 1-> ");
+                                v1 = sc.nextInt();
+                                sc.nextLine();
+
+                                v = client.readVertice(v1);
+
                                 List<Aresta> arestas = new ArrayList<>();
                                 arestas = client.readAllArestaOfVertice(v);
 
+                                if (arestas == null) {
+                                    System.out.println("Nenhuma aresta para este vertice.");
+                                }
+
                                 for (Aresta aresta : arestas) {
-                                System.out.println("\nNome do vertice 1 -> " + aresta.getV1());
-                                System.out.println("Nome do vertice 2 -> " + aresta.getV2());
-                                System.out.println("Peso da aresta-> " + aresta.getPeso());
-                                System.out.println("Descricao da aresta-> " + aresta.getDescricao());
-                                System.out.println("Vertice direcionada? -> " + aresta.direct);
+                                    System.out.println("\nNome do vertice 1 -> " + aresta.getV1());
+                                    System.out.println("Nome do vertice 2 -> " + aresta.getV2());
+                                    System.out.println("Peso da aresta-> " + aresta.getPeso());
+                                    System.out.println("Descricao da aresta-> " + aresta.getDescricao());
+                                    System.out.println("Vertice direcionada? -> " + aresta.direct);
                                 }
                             } catch (KeyNotFound e) {
-                                System.out.println("Arestas nao encontrados.");
+                                System.out.println("Dados nao encontrados no grafo. Repita a operacao.");
                             }
                             break;
                         case 13:
