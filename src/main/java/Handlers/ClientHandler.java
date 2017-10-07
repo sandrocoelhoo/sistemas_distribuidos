@@ -150,7 +150,7 @@ public class ClientHandler {
 
                                 switch (certeza) {
                                     case 1:
-                                        v.setNome(nome);
+                                        //v.setNome(nome);
 
                                         if (client.deleteVertice(v)) {
                                             System.out.println("# Vertice deletado!");
@@ -235,13 +235,21 @@ public class ClientHandler {
                             }
                             break;
                         case 7:
+                            try{
                             System.out.println("\n@@@@@ ADICIONAR ARESTA @@@@@ \n");
                             System.out.print("Nome do 1º vertice-> ");
                             v1 = sc.nextInt();
                             sc.nextLine();
+                            
+                            v = client.readVertice(v1);
+
                             System.out.print("Nome do 2º vertice-> ");
                             v2 = sc.nextInt();
                             sc.nextLine();
+                            System.out.println("-------------------");
+
+                            v = client.readVertice(v2);
+                            
                             System.out.print("Peso da aresta-> ");
                             peso = sc.nextDouble();
                             sc.nextLine();
@@ -272,6 +280,10 @@ public class ClientHandler {
                                 }
                             } else {
                                 System.out.println("# Problema na insercao da aresta. Repita a operacao.");
+                            }
+                                
+                            } catch (KeyNotFound e) {
+                                System.out.println("Dado nao encontrado no grafo.");
                             }
                             break;
                         case 8:
@@ -305,12 +317,12 @@ public class ClientHandler {
 
                                 if (client.updateAresta(a)) {
                                     System.out.println("# Aresta atualizada!");
-                                    
-                                    if (a.direct == false){
+
+                                    if (a.direct == false) {
                                         a.setV1(v2);
                                         a.setV2(v1);
-                                        
-                                        if (client.updateAresta(a)){
+
+                                        if (client.updateAresta(a)) {
                                             System.out.println("# Aresta espelhada atualiza! ");
                                         }
                                     }
@@ -358,7 +370,7 @@ public class ClientHandler {
                                     System.out.println("Vertice direcionada? -> " + a.direct);
                                 }
 
-                                System.out.println("\n-> Tem certeza que deseja deletar este(s) vertice?");
+                                System.out.println("\n-> Tem certeza que deseja deletar esta aresta?");
                                 System.out.println("1 - SIM");
                                 System.out.println("2 - NÃO");
                                 System.out.print("Opcao-> ");

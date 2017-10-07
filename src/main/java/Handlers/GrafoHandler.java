@@ -60,15 +60,17 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public boolean deleteVertice(Vertice v) throws KeyNotFound, TException {
-        Vertice v1 = this.readVertice(v.nome);
-        Vertice v2;
-
-        synchronized (v1) {
-            for (Integer key : v1.HashAresta.keySet()) {
-                v2 = this.readVertice(v1.HashAresta.get(key).v2);
-                v2.HashAresta.remove(key);
+        Vertice vertice;
+        Aresta a;
+        synchronized (v) {
+            for (Integer key : v.HashAresta.keySet()) {
+                //vertice = this.readVertice(v.HashAresta.get(key).getV2());
+                //System.out.println(vertice);
+                //vertice.HashAresta.remove(key);
+                a = this.readAresta(v.HashAresta.get(key).getV1(), v.HashAresta.get(key).getV2());
+                this.deleteAresta(a);
             }
-            if (HashVertice.remove(v.nome) != null) {
+            if (HashVertice.remove(v.getNome()) != null) {
                 return true;
             }
             return false;
@@ -100,7 +102,10 @@ public class GrafoHandler implements MetodosGrafo.Iface {
 
     @Override
     public boolean addAresta(Aresta a) throws TException {
-        if (HashVertice.get(a.v1).HashAresta.putIfAbsent(a.v2, a) == null) {
+        Vertice v;
+        v = this.readVertice(a.getV1());
+
+        if (v.HashAresta.putIfAbsent(a.getV2(), a) == null) {
             return true;
         }
 
@@ -130,8 +135,10 @@ public class GrafoHandler implements MetodosGrafo.Iface {
         ArrayList<Aresta> Arestas = new ArrayList<>();
 
         for (Integer keyVertice : HashVertice.keySet()) {
-            for (Integer keyAresta : HashVertice.get(keyVertice).HashAresta.keySet()) {
-                Arestas.add(HashVertice.get(keyVertice).HashAresta.get(keyAresta));
+            synchronized(keyVertice){
+                for (Integer keyAresta : HashVertice.get(keyVertice).HashAresta.keySet()) {
+                    Arestas.add(HashVertice.get(keyVertice).HashAresta.get(keyAresta));
+                }                
             }
         }
         return Arestas;
@@ -143,8 +150,8 @@ public class GrafoHandler implements MetodosGrafo.Iface {
         Vertice vertice;
 
         for (Integer key : v.HashAresta.keySet()) {
-            vertice = this.readVertice(v.HashAresta.get(key).v2);
-            Arestas.add(this.readAresta(v.nome, vertice.nome));
+            vertice = this.readVertice(v.HashAresta.get(key).getV2());
+            Arestas.add(this.readAresta(v.getNome(), vertice.getNome()));
         }
 
         return Arestas;
