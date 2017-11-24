@@ -62,18 +62,25 @@ public class GrafoHandler implements MetodosGrafo.Iface {
     public boolean deleteVertice(Vertice v) throws KeyNotFound, TException {
         Vertice vertice;
         Aresta a;
-        synchronized (v) {
-            for (Integer key : v.HashAresta.keySet()) {
-                //vertice = this.readVertice(v.HashAresta.get(key).getV2());
-                //System.out.println(vertice);
-                //vertice.HashAresta.remove(key);
-                a = this.readAresta(v.HashAresta.get(key).getV1(), v.HashAresta.get(key).getV2());
-                this.deleteAresta(a);
-            }
-            if (HashVertice.remove(v.getNome()) != null) {
-                return true;
-            }
-            return false;
+            synchronized (v) {
+                for (Integer key : v.HashAresta.keySet()) {
+                    a = this.readAresta(v.HashAresta.get(key).getV1(), v.HashAresta.get(key).getV2());
+                    this.deleteAresta(a);
+                }
+                
+                for (Integer keyVertice : HashVertice.keySet()) {
+                    for (Integer keyAresta : HashVertice.get(keyVertice).HashAresta.keySet()) {
+                        if (HashVertice.get(keyVertice).HashAresta.get(keyAresta).getV2() == v.getNome()) {
+                            this.deleteAresta(HashVertice.get(keyVertice).HashAresta.get(keyAresta));
+                        }
+                    }
+                }
+
+                if (this.HashVertice.remove(v.getNome()) != null) {
+                    return true;
+                } else {
+                    return false;
+                }
         }
     }
 
